@@ -43,8 +43,3 @@ class DefaultParser(BaseParser):
         
         '''
         print "For user %s: %s" % (for_user, tweet['text'])
-
-if __name__ == "__main__":
-    import doctest
-    
-    doctest.testmod()
