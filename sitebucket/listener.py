@@ -193,7 +193,7 @@ class SiteStream(object):
             except httplib.ResponseNotReady:
                 ready = False
                 self.sleep(
-                    time=.1,
+                    stime=.1,
                     update_error_count=False,
                     close_connection=False)
             except:
