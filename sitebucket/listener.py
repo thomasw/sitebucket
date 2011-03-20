@@ -86,6 +86,7 @@ class SiteStream(object):
         >>> req = stream.request
         >>> print req.to_url() #doctest: +ELLIPSIS
         http://betastream.twitter.com/2b/site.json?...
+        
         '''
         parameters = {
             'oauth_version': "1.0",
@@ -102,7 +103,7 @@ class SiteStream(object):
             )
         request = oauth.Request(METHOD, url, parameters=parameters)
         request.sign_request(
-            oauth.SignatureMethod_HMAC_SHA1(), consumer, token)
+            oauth.SignatureMethod_HMAC_SHA1(), self.consumer, self.token)
         
         self._last_request = request
         return request
@@ -117,6 +118,7 @@ class SiteStream(object):
         >>> stream.error_count = stream.retry_limit # Raise error count to max
         >>> stream.retry_ok
         False
+        
         '''
         return self.error_count < self.retry_limit
     
@@ -146,6 +148,7 @@ class SiteStream(object):
         Traceback (most recent call last):
           ...
         SitebucketError: Expecting python-oauth2 Token object for token.
+        
         '''
         if not self.stream_with in ALLOWED_STREAM_WITH:
             raise SitebucketError("'%s' is an invalid value for stream_with."
@@ -170,6 +173,7 @@ class SiteStream(object):
         
         If the response has a status other than 200, the method logs the error
         and returns None.
+        
         '''
         ready = False
         resp = None
@@ -244,6 +248,7 @@ class SiteStream(object):
         or an httplib response object.
         
         >>> stream.connect() #doctest: +SKIP
+        
         '''
         while not self.running and self.retry_ok and not self.disconnect_issued:
             try:
@@ -291,6 +296,7 @@ class SiteStream(object):
         and stream.retry_time == RETRY_TIME and stream.error_count == 0 \
         and stream.timeout == TIMEOUT and stream.buffer == ''
         True
+        
         '''
         self.retry_limit = RETRY_LIMIT
         self.retry_time = RETRY_TIME
@@ -367,18 +373,9 @@ class SiteStream(object):
         >>> stream.parser = myparser()
         >>> stream.on_receive("{'some':'json'}\\r\\n")
         {'some':'json'}
+        
         '''
         self.buffer += data
         if data.endswith("\r\n") and self.buffer.strip():
             self.parser.parse(self.buffer)
-            self.buffer = ' '
-
-if __name__ == "__main__":
-    import doctest
-    import oauth2
-    
-    token = oauth2.Token('key', 'secret')
-    consumer = oauth2.Consumer('key', 'secret')
-    stream = SiteStream([1,2,3], consumer, token)
-    
-    doctest.testmod()
+            self.buffer = ''
