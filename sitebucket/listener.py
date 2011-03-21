@@ -187,7 +187,7 @@ class SiteStream(object):
                     resp = None
                     break
                 else:
-                    print "Connection eastablished."
+                    print "Connection established."
                     self.running = True
                     self.reset_throttles()
             except httplib.ResponseNotReady:
