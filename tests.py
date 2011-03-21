@@ -105,7 +105,7 @@ class MockResponseObject(object):
         return rand
 
 if __name__ == '__main__':
-    from sitebucket import listener, parser, thread, manager, error
+    from sitebucket import listener, parser, thread, monitor, error, util
     from sitebucket.parser import BaseParser
     
     token = oauth.Token('key', 'secret')
@@ -117,16 +117,14 @@ if __name__ == '__main__':
     failed_stream.initialized = True
     
     print "Executing doc tests:\n"
-    doctest.testmod(listener, extraglobs={
-        'stream':stream,
-        'token':token,
-        'consumer':consumer,})
+    extraglobs={'stream':stream, 'token':token, 'consumer':consumer, 
+                'failed_stream':failed_stream}
+    doctest.testmod(listener, extraglobs=extraglobs)
     doctest.testmod(parser)
-    doctest.testmod(thread, extraglobs={
-        'stream':stream,
-        'failed_stream':failed_stream})
-    doctest.testmod(manager)
+    doctest.testmod(thread, extraglobs=extraglobs)
+    doctest.testmod(monitor, extraglobs=extraglobs)
     doctest.testmod(error)
+    doctest.testmod(util)
     print "Done!"
     
     print "\nExecuting unit tests:"
