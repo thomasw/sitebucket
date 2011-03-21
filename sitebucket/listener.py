@@ -52,7 +52,7 @@ class SiteStream(object):
         >>> token = oauth2.Token('key', 'secret')
         >>> consumer = oauth2.Consumer('key', 'secret')
         
-        And then instatiate your SiteStream object.
+        And then instantiate your SiteStream object.
         >>> stream = SiteStream([1,2,3], consumer, token)
             
         '''
