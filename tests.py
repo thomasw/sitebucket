@@ -112,13 +112,19 @@ if __name__ == '__main__':
     consumer = oauth.Consumer('key', 'secret')
     stream = listener.SiteStream([1,2,3], consumer, token)
     
+    failed_stream = listener.SiteStream([1,2,3], consumer, token)
+    failed_stream.error_count = 10
+    failed_stream.initialized = True
+    
     print "Executing doc tests:\n"
     doctest.testmod(listener, extraglobs={
         'stream':stream,
         'token':token,
         'consumer':consumer,})
     doctest.testmod(parser)
-    doctest.testmod(thread)
+    doctest.testmod(thread, extraglobs={
+        'stream':stream,
+        'failed_stream':failed_stream})
     doctest.testmod(manager)
     doctest.testmod(error)
     print "Done!"
