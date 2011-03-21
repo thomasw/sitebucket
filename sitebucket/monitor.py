@@ -1,5 +1,6 @@
 import threading
 import collections
+import time
 
 from listener import SiteStream, FOLLOW_LIMIT
 from thread import ListenThread
@@ -8,6 +9,7 @@ from parser import DefaultParser
 
 NONFULL_STREAM_LIMIT = 10
 RESTART_DEAD_STREAMS = True
+MONITOR_SLEEP_INTERVAL = 10
 
 class ListenThreadMonitor(threading.Thread):
     '''The ListenThreadMonitor takes a follow list of any size, creates
@@ -41,7 +43,6 @@ class ListenThreadMonitor(threading.Thread):
     >>> monitor.disconnect()
     
     '''
-    
     def __init__(self, follow, consumer, token, stream_with="user",
                  parser=DefaultParser(), *args, **kwargs):
         '''Returns a ListenThreadMonitor object. Parameters are identical to
@@ -59,6 +60,7 @@ class ListenThreadMonitor(threading.Thread):
         * token -- a python-oauth2 Token object for the app's owner account.
         * parser -- an object that extends BaseParser that will handle data
         returned by the stream.
+        
         '''
         # Make sure follow is iterable.
         if not isinstance(follow, collections.Iterable):
@@ -122,6 +124,8 @@ class ListenThreadMonitor(threading.Thread):
                     thread = self.threads.pop()
                     thread.disconnect()
                 print "Monitor terminated."
+            
+            time.sleep(MONITOR_SLEEP_INTERVAL)
     
     def add_follows(self, follow, start=True):
         '''Creates and adds new ListenThreads based on a specified follow
