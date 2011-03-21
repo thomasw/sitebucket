@@ -125,10 +125,10 @@ class SiteStream(object):
     def __check_params(self):
         ''' Raises an exception if the init parameters are invalid.
         
-        >>> SiteStream(range(1, 102), consumer, token)
+        >>> SiteStream(range(1, FOLLOW_LIMIT+2), consumer, token) #doctest: +ELLIPSIS
         Traceback (most recent call last):
           ...
-        SitebucketError: The number of followers specified (101) exceeds the follow limit: 100.
+        SitebucketError: The number of followers specified (...) exceeds the follow limit: ....
         
         >>> SiteStream(1, consumer, token, stream_with='family')
         Traceback (most recent call last):
