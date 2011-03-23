@@ -122,11 +122,11 @@ class ListenThreadMonitor(threading.Thread):
             if len(self.nonfull_streams) > NONFULL_STREAM_LIMIT:
                 self.consolidate_streams
             
-            if self.disconnect:
+            if self.disconnect_issued:
                 print "Issuing shutdown requests to streams..."
                 while self.threads:
                     thread = self.threads.pop()
-                    thread.disconnect()
+                    thread.close()
                 print "Monitor terminated."
             
             time.sleep(MONITOR_SLEEP_INTERVAL)
