@@ -2,9 +2,11 @@ import simplejson as json
 
 class BaseParser(object):
     '''BaseParser is a prototype for Stream Parser objects. All parsers should
-    inherit this class.'''
+    extend this class.'''
     
     def parse(self, token):
+        '''This method must be overridden. It raises a NotImplementedError.
+        '''
         raise NotImplementedError
     
 class DefaultParser(BaseParser):

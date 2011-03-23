@@ -1,22 +1,21 @@
 import threading
 
 class ListenThread(threading.Thread):
-    ''' ListenThread is a thread object wrapper for listener.SiteStream
+    '''ListenThread is a thread object wrapper for listener.SiteStream
     objects. Instantiate a ListenThread instance with a required SiteStream
     object and then invoke the ListenThread's start method to connect
     to the stream and parse the output in a separate thread.
+    
+    * stream -- an instance of listener.SiteStream
+    
+    >>> thread = ListenThread(stream)
+    >>> stream == thread.stream
+    True
+    
     '''
     def __init__(self, stream, *args, **kwargs):
         '''Creates a ListenThread object that can be executed by calling the
-        object's start method.
-        
-        * stream -- an instance of listener.SiteStream
-        
-        >>> thread = ListenThread(stream)
-        >>> stream == thread.stream
-        True
-        
-        '''
+        object's start method.'''
         self.stream = stream
         super(ListenThread, self).__init__(*args, **kwargs)
         
@@ -28,11 +27,13 @@ class ListenThread(threading.Thread):
         allotted retry attempts have been exhausted.
         
         An uninitialized connection:
+        
         >>> thread = ListenThread(stream)
         >>> thread.connection_healthy
         True
         
         A stream that has failed:
+        
         >>> thread = ListenThread(failed_stream)
         >>> thread.connection_healthy
         False
@@ -74,5 +75,6 @@ class ListenThread(threading.Thread):
         
         >>> thread = ListenThread(stream)
         >>> thread.close()
+        
         '''
         self.stream.disconnect()

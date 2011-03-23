@@ -26,37 +26,34 @@ FOLLOW_LIMIT = 100
 
 class SiteStream(object):
     ''' The SiteStream object establishes an authenticated OAuth Connection
-    to Twitter's site stream endpoint and parses the returned data.'''
+    to Twitter's site stream endpoint and parses the returned data.
+    
+    Keyword arguments:
+    
+    * follow -- a list of users that have authenticated your app to follow
+    * stream_with -- 'user' or 'followings'. A value of 'user' will cause the stream to only return data about actions the users specified in follow take. A value of 'followings' will cause the Stream object to return data about the user's followings (basically their home timeline). This defaults to 'user'.
+    * consumer -- a python-oauth2 Consumer object for the app
+    * token -- a python-oauth2 Token object for the app's owner account.
+    * parser -- an object that extends BaseParser that will handle data returned by the stream.
+    
+    To use, first import SiteStream and oauth2:
+    
+    >>> from sitebucket import SiteStream
+    >>> import oauth2
+    
+    Then generate your Consumer and Token objects:
+    
+    >>> token = oauth2.Token('key', 'secret')
+    >>> consumer = oauth2.Consumer('key', 'secret')
+    
+    And then instantiate your SiteStream object:
+    
+    >>> stream = SiteStream([1,2,3], consumer, token)
+    
+    '''
     def __init__(self, follow, consumer, token, stream_with="user",
                  parser=DefaultParser()):
-        '''Returns a SiteStream object.
-            
-        Keyword arguments:
-        
-        * follow -- a list of users that have authenticated your app to follow
-        * stream_with -- 'user' or 'followings'. A value of 'user' will cause 
-        the stream to only return data about actions the users specified in
-        follow take. A value of 'followings' will cause the Stream object to
-        return data about the user's followings (basically their home
-        timeline). This defaults to 'user'.
-        * consumer -- a python-oauth2 Consumer object for the app
-        * token -- a python-oauth2 Token object for the app's owner account.
-        * parser -- an object that extends BaseParser that will handle data
-        returned by the stream.
-        
-        To use, first import SiteStream and oauth2
-        
-        >>> from sitebucket import SiteStream
-        >>> import oauth2
-        
-        Then generate your Consumer and Token objects:
-        >>> token = oauth2.Token('key', 'secret')
-        >>> consumer = oauth2.Consumer('key', 'secret')
-        
-        And then instantiate your SiteStream object.
-        >>> stream = SiteStream([1,2,3], consumer, token)
-            
-        '''
+        '''Returns a SiteStream object.'''
         # Make sure follow is iterable.
         if not isinstance(follow, collections.Iterable):
             follow = [follow]
@@ -302,9 +299,15 @@ class SiteStream(object):
         >>> stream.retry_time = 10000.0 # really high retry time
         >>> stream.buffer = 'leftover input' # buffer with unfinished input
         >>> stream.reset_throttles() # reset!
-        >>> stream.retry_limit == RETRY_LIMIT \
-        and stream.retry_time == RETRY_TIME and stream.error_count == 0 \
-        and stream.timeout == TIMEOUT and stream.buffer == ''
+        >>> stream.retry_limit == RETRY_LIMIT
+        True
+        >>> stream.retry_time == RETRY_TIME
+        True
+        >>> stream.error_count == 0
+        True
+        >>> stream.timeout == TIMEOUT
+        True
+        >>> stream.buffer == ''
         True
         
         '''
@@ -321,12 +324,9 @@ class SiteStream(object):
         This method may optionally increment the error_count property and
         terminate the connection.
         
-        * stime -- sleep time that overrides the object's retry_time property.
-        If this is set, retry_time is not squared.
-        * update_error_count -- if this is true, the method increments the 
-        error_count property
-        * close_connection -- if this is true, the method terminates the 
-        connection.
+        * stime -- sleep time that overrides the object's retry_time property. If this is set, retry_time is not squared.
+        * update_error_count -- if this is true, the method increments the error_count property
+        * close_connection -- if this is true, the method terminates the connection.
         
         >>> old_error_count = stream.error_count
         >>> stream.sleep(0)
@@ -368,8 +368,8 @@ class SiteStream(object):
         self.sleep(stime=0, update_error_count=False, close_connection=True)
     
     def on_receive(self, data):
-        ''' When a complete message is received from the stream
-        (json terminated by \r\n), on_receive passes the data to the parser
+        '''When a complete message is received from the stream (json 
+        terminated by \\\\r\\\\n), on_receive passes the data to the parser
         object's parse method and clears the buffer.
         
         If we have a custom parser defined like so:

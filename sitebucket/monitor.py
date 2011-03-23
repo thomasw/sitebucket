@@ -21,51 +21,49 @@ class ListenThreadMonitor(threading.Thread):
     list and initializes them. By default, the monitor will attempt to restart
     any connections that fail.
     
+    Keyword arguments:
+    
+    * follow -- a list of users that have authenticated your app to follow
+    * stream_with -- 'user' or 'followings'. A value of 'user' will cause the stream to only return data about actions the users specified in follow take. A value of 'followings' will cause the Stream object to return data about the user's followings (basically their home timeline). This defaults to 'user'.
+    * consumer -- a python-oauth2 Consumer object for the app
+    * token -- a python-oauth2 Token object for the app's owner account.
+    * parser -- an object that extends BaseParser that will handle data returned by the stream.
+    
     The monitor's run method blocks, so invoke it via start method if you want
     to run it in a separate thread.
     
-    To use, first import ListenThreadMonitor and oauth2
+    To use, first import ListenThreadMonitor and oauth2:
     
     >>> from sitebucket import ListenThreadMonitor
     >>> import oauth2
     
     Then generate your Consumer and Token objects:
+    
     >>> token = oauth2.Token('key', 'secret')
     >>> consumer = oauth2.Consumer('key', 'secret')
     
-    And then instantiate your ListenThreadMonitor object.
+    And then instantiate your ListenThreadMonitor object:
+    
     >>> monitor = ListenThreadMonitor([1,2,3], consumer, token)
     
     Calling run will start the streaming connections and block until you kill
-    the process.
+    the process:
+    
     >>> monitor.run() #doctest: +SKIP
     
-    Calling start will start the monitor loop in a separate thread.
+    Calling start will start the monitor loop in a separate thread:
+    
     >>> monitor.start() #doctest: +SKIP
     
     It can be killed later via the disconnect method:
+    
     >>> monitor.disconnect()
     
     '''
     def __init__(self, follow, consumer, token, stream_with="user",
                  parser=DefaultParser(), *args, **kwargs):
         '''Returns a ListenThreadMonitor object. Parameters are identical to
-        the SiteStream object.
-        
-        Keyword arguments:
-        
-        * follow -- a list of users that have authenticated your app to follow
-        * stream_with -- 'user' or 'followings'. A value of 'user' will cause 
-        the stream to only return data about actions the users specified in
-        follow take. A value of 'followings' will cause the Stream object to
-        return data about the user's followings (basically their home
-        timeline). This defaults to 'user'.
-        * consumer -- a python-oauth2 Consumer object for the app
-        * token -- a python-oauth2 Token object for the app's owner account.
-        * parser -- an object that extends BaseParser that will handle data
-        returned by the stream.
-        
-        '''
+        the SiteStream object.'''
         # Make sure follow is iterable.
         if not isinstance(follow, collections.Iterable):
             follow = [follow]
