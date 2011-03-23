@@ -25,8 +25,8 @@ FOLLOW_LIMIT = 100
 
 
 class SiteStream(object):
-    ''' The SiteStream object establishes an authenticated OAuth Connection
-    to Twitter's site stream endpoint and parses the returned data.
+    ''' The SiteStream object establishes an authenticated connection via
+    OAuth to Twitter's site streams endpoint and parses the returned data.
     
     Keyword arguments:
     
@@ -90,7 +90,7 @@ class SiteStream(object):
     def request(self):
         ''' Returns an oauth2 request object to be used for connecting to the
         streaming API endpoint. For debugging purposes, the returned request
-        object is cached in __last_request.
+        object is cached in self._last_request.
             
         >>> req = stream.request
         >>> print req.to_url() #doctest: +ELLIPSIS

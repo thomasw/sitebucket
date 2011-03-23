@@ -29,3 +29,8 @@ httplib's response object doesn't have a method for returning all data that's be
 The response object blocks if it hasn't yet received X characters. Because of this, Sitebucket has to consume the data returned by the stream 1 character at a time.
 
 This causes really high CPU spikes when the stream is consuming large amounts of data. Unfortunately, this occurs regularly upon connection initialization because twitter sends a list of each user's followings.
+
+The Default Parses only Recognizes Tweets
+=========================================
+
+The Default parser should recognize and call functions for all types of messages returned by the streaming API.
