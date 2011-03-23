@@ -1,0 +1,166 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Parsing Stream Output &mdash; Sitebucket v0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Sitebucket v0.0.1 documentation" href="index.html" />
+    <link rel="next" title="Changelog" href="changelog.html" />
+    <link rel="prev" title="Monitoring Streams and Automatically Reconnecting" href="monitor.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="monitor.html" title="Monitoring Streams and Automatically Reconnecting"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Sitebucket v0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-sitebucket.parser">
+<span id="parsing-stream-output"></span><span id="parsing"></span><h1>Parsing Stream Output<a class="headerlink" href="#module-sitebucket.parser" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="sitebucket.parser.BaseParser">
+<em class="property">class </em><tt class="descclassname">sitebucket.parser.</tt><tt class="descname">BaseParser</tt><a class="headerlink" href="#sitebucket.parser.BaseParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>BaseParser is a prototype for Stream Parser objects. All parsers should
+extend this class.</p>
+<dl class="method">
+<dt id="sitebucket.parser.BaseParser.parse">
+<tt class="descname">parse</tt><big>(</big><em>token</em><big>)</big><a class="headerlink" href="#sitebucket.parser.BaseParser.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method must be overridden. It raises a NotImplementedError.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="sitebucket.parser.DefaultParser">
+<em class="property">class </em><tt class="descclassname">sitebucket.parser.</tt><tt class="descname">DefaultParser</tt><a class="headerlink" href="#sitebucket.parser.DefaultParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple Stream parser that converts the returned data to JSON and
+prints tweets.</p>
+<dl class="method">
+<dt id="sitebucket.parser.DefaultParser.parse">
+<tt class="descname">parse</tt><big>(</big><em>token</em><big>)</big><a class="headerlink" href="#sitebucket.parser.DefaultParser.parse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts input data to JSON and calls the tweet method if the 
+input is a tweet.</p>
+<p>Input that isn&#8217;t a tweet:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">parser</span> <span class="o">=</span> <span class="n">DefaultParser</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s">&#39;{&quot;some&quot;:&quot;json&quot;}&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Input that would be considered a tweet:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="s">&#39;{&quot;for_user&quot;:1, &quot;message&quot;:{&quot;text&quot;:&quot;hi!&quot;}}&#39;</span><span class="p">)</span>
+<span class="go">For user 1: hi!</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sitebucket.parser.DefaultParser.tweet">
+<tt class="descname">tweet</tt><big>(</big><em>for_user</em>, <em>tweet</em><big>)</big><a class="headerlink" href="#sitebucket.parser.DefaultParser.tweet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a tweet based on a tweet message and who the user is for.</p>
+<ul class="simple">
+<li>for_user &#8211; the id of the user the tweet is for.</li>
+<li>tweet &#8211; a dictionary containing a &#8216;text&#8217; entry</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">parser</span> <span class="o">=</span> <span class="n">DefaultParser</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parser</span><span class="o">.</span><span class="n">tweet</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">{</span><span class="s">&#39;text&#39;</span><span class="p">:</span><span class="s">&#39;hi!&#39;</span><span class="p">})</span>
+<span class="go">For user 1: hi!</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="monitor.html"
+                        title="previous chapter">Monitoring Streams and Automatically Reconnecting</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="changelog.html"
+                        title="next chapter">Changelog</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/parsing.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="monitor.html" title="Monitoring Streams and Automatically Reconnecting"
+             >previous</a> |</li>
+        <li><a href="index.html">Sitebucket v0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Thomas Welfley.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

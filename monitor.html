@@ -1,0 +1,268 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Monitoring Streams and Automatically Reconnecting &mdash; Sitebucket v0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Sitebucket v0.0.1 documentation" href="index.html" />
+    <link rel="next" title="Parsing Stream Output" href="parsing.html" />
+    <link rel="prev" title="Streaming Connections" href="streams.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="parsing.html" title="Parsing Stream Output"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="streams.html" title="Streaming Connections"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Sitebucket v0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-sitebucket.monitor">
+<span id="monitoring-streams-and-automatically-reconnecting"></span><span id="monitor"></span><h1>Monitoring Streams and Automatically Reconnecting<a class="headerlink" href="#module-sitebucket.monitor" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="sitebucket.monitor.ListenThreadMonitor">
+<em class="property">class </em><tt class="descclassname">sitebucket.monitor.</tt><tt class="descname">ListenThreadMonitor</tt><big>(</big><em>follow</em>, <em>consumer</em>, <em>token</em>, <em>stream_with='user'</em>, <em>parser=&lt;sitebucket.parser.DefaultParser object at 0x102305810&gt;</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#sitebucket.monitor.ListenThreadMonitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ListenThreadMonitor takes a follow list of any size, creates
+ListenThread objects and corresponding SiteStream objects for the follow
+list and initializes them. By default, the monitor will attempt to restart
+any connections that fail.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>follow &#8211; a list of users that have authenticated your app to follow</li>
+<li>stream_with &#8211; &#8216;user&#8217; or &#8216;followings&#8217;. A value of &#8216;user&#8217; will cause the stream to only return data about actions the users specified in follow take. A value of &#8216;followings&#8217; will cause the Stream object to return data about the user&#8217;s followings (basically their home timeline). This defaults to &#8216;user&#8217;.</li>
+<li>consumer &#8211; a python-oauth2 Consumer object for the app</li>
+<li>token &#8211; a python-oauth2 Token object for the app&#8217;s owner account.</li>
+<li>parser &#8211; an object that extends BaseParser that will handle data returned by the stream.</li>
+</ul>
+<p>The monitor&#8217;s run method blocks, so invoke it via start method if you want
+to run it in a separate thread.</p>
+<p>To use, first import ListenThreadMonitor and oauth2:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sitebucket</span> <span class="kn">import</span> <span class="n">ListenThreadMonitor</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">oauth2</span>
+</pre></div>
+</div>
+<p>Then generate your Consumer and Token objects:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">oauth2</span><span class="o">.</span><span class="n">Token</span><span class="p">(</span><span class="s">&#39;key&#39;</span><span class="p">,</span> <span class="s">&#39;secret&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">consumer</span> <span class="o">=</span> <span class="n">oauth2</span><span class="o">.</span><span class="n">Consumer</span><span class="p">(</span><span class="s">&#39;key&#39;</span><span class="p">,</span> <span class="s">&#39;secret&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And then instantiate your ListenThreadMonitor object:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span> <span class="o">=</span> <span class="n">ListenThreadMonitor</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">consumer</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Calling run will start the streaming connections and block until you kill
+the process:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> 
+</pre></div>
+</div>
+<p>Calling start will start the monitor loop in a separate thread:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> 
+</pre></div>
+</div>
+<p>It can be killed later via the disconnect method:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="sitebucket.monitor.ListenThreadMonitor.add_follows">
+<tt class="descname">add_follows</tt><big>(</big><em>follow</em>, <em>start=True</em><big>)</big><a class="headerlink" href="#sitebucket.monitor.ListenThreadMonitor.add_follows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates and adds new ListenThreads based on a specified follow
+list. Optionally starts the new threads.</p>
+<ul class="simple">
+<li>follow &#8211; list of users to start following</li>
+<li>start &#8211; (default: True) If true, start running the new threads.</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">follow</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">FOLLOW_LIMIT</span><span class="o">*</span><span class="mi">10</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span> <span class="o">=</span> <span class="n">ListenThreadMonitor</span><span class="p">([],</span> <span class="n">consumer</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span><span class="o">.</span><span class="n">add_follows</span><span class="p">(</span><span class="n">follow</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">monitor</span><span class="o">.</span><span class="n">threads</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">follow</span><span class="p">)</span><span class="o">/</span><span class="n">FOLLOW_LIMIT</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sitebucket.monitor.ListenThreadMonitor.consolidate_streams">
+<tt class="descname">consolidate_streams</tt><big>(</big><big>)</big><a class="headerlink" href="#sitebucket.monitor.ListenThreadMonitor.consolidate_streams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all streams that aren&#8217;t following the maximum number of users
+they are permitted to follow and consolidate them into the smallest
+number of streaming connections possible.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span> <span class="o">=</span> <span class="n">ListenThreadMonitor</span><span class="p">([],</span> <span class="n">consumer</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span><span class="o">.</span><span class="n">add_follows</span><span class="p">([</span><span class="mi">1</span><span class="p">,],</span> <span class="n">start</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span><span class="o">.</span><span class="n">add_follows</span><span class="p">([</span><span class="mi">2</span><span class="p">,],</span> <span class="n">start</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span><span class="o">.</span><span class="n">add_follows</span><span class="p">([</span><span class="mi">3</span><span class="p">,],</span> <span class="n">start</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">monitor</span><span class="o">.</span><span class="n">threads</span><span class="p">)</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span><span class="o">.</span><span class="n">consolidate_streams</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">monitor</span><span class="o">.</span><span class="n">threads</span><span class="p">)</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sitebucket.monitor.ListenThreadMonitor.disconnect">
+<tt class="descname">disconnect</tt><big>(</big><big>)</big><a class="headerlink" href="#sitebucket.monitor.ListenThreadMonitor.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the disconnect flag to True, which will cause the monitor&#8217;s
+loop to terminate.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span> <span class="o">=</span> <span class="n">ListenThreadMonitor</span><span class="p">([],</span> <span class="n">consumer</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sitebucket.monitor.ListenThreadMonitor.healthy_streams">
+<tt class="descname">healthy_streams</tt><a class="headerlink" href="#sitebucket.monitor.ListenThreadMonitor.healthy_streams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of all threads that are healthy, uninitialized,
+or connecting.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span> <span class="o">=</span> <span class="n">ListenThreadMonitor</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">consumer</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">monitor</span><span class="o">.</span><span class="n">healthy_streams</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sitebucket.monitor.ListenThreadMonitor.nonfull_streams">
+<tt class="descname">nonfull_streams</tt><a class="headerlink" href="#sitebucket.monitor.ListenThreadMonitor.nonfull_streams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of threads that aren&#8217;t following a number of users
+equal to FOLLOW_LIMIT.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">follow</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">FOLLOW_LIMIT</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span> <span class="o">=</span> <span class="n">ListenThreadMonitor</span><span class="p">(</span><span class="n">follow</span><span class="p">,</span> <span class="n">consumer</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">monitor</span><span class="o">.</span><span class="n">nonfull_streams</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sitebucket.monitor.ListenThreadMonitor.restart_unhealthy_streams">
+<tt class="descname">restart_unhealthy_streams</tt><big>(</big><big>)</big><a class="headerlink" href="#sitebucket.monitor.ListenThreadMonitor.restart_unhealthy_streams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restart all unhealthy streaming ListenThreads.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="sitebucket.monitor.ListenThreadMonitor.run">
+<tt class="descname">run</tt><big>(</big><big>)</big><a class="headerlink" href="#sitebucket.monitor.ListenThreadMonitor.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts all threads and begins monitoring loop. Invoke this via
+the object&#8217;s start method to run the monitor in a separate thread.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span> <span class="o">=</span> <span class="n">ListenThreadMonitor</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">consumer</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> 
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sitebucket.monitor.ListenThreadMonitor.unhealthy_streams">
+<tt class="descname">unhealthy_streams</tt><a class="headerlink" href="#sitebucket.monitor.ListenThreadMonitor.unhealthy_streams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of all threads with failed connections.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span> <span class="o">=</span> <span class="n">ListenThreadMonitor</span><span class="p">([],</span> <span class="n">consumer</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span><span class="o">.</span><span class="n">unhealthy_streams</span>
+<span class="go">[]</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">failed_thread</span> <span class="o">=</span> <span class="n">ListenThread</span><span class="p">(</span><span class="n">failed_stream</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span><span class="o">.</span><span class="n">threads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">failed_thread</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">monitor</span><span class="o">.</span><span class="n">unhealthy_streams</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">failed_thread</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="streams.html"
+                        title="previous chapter">Streaming Connections</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="parsing.html"
+                        title="next chapter">Parsing Stream Output</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/monitor.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="parsing.html" title="Parsing Stream Output"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="streams.html" title="Streaming Connections"
+             >previous</a> |</li>
+        <li><a href="index.html">Sitebucket v0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Thomas Welfley.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

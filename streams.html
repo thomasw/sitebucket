@@ -1,0 +1,372 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Streaming Connections &mdash; Sitebucket v0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Sitebucket v0.0.1 documentation" href="index.html" />
+    <link rel="next" title="Monitoring Streams and Automatically Reconnecting" href="monitor.html" />
+    <link rel="prev" title="Sitebucket: Twitter Site Streams Consumer" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="monitor.html" title="Monitoring Streams and Automatically Reconnecting"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Sitebucket: Twitter Site Streams Consumer"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Sitebucket v0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-sitebucket.listener">
+<span id="streaming-connections"></span><span id="streams"></span><h1>Streaming Connections<a class="headerlink" href="#module-sitebucket.listener" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="sitebucket.listener.SiteStream">
+<em class="property">class </em><tt class="descclassname">sitebucket.listener.</tt><tt class="descname">SiteStream</tt><big>(</big><em>follow</em>, <em>consumer</em>, <em>token</em>, <em>stream_with='user'</em>, <em>parser=&lt;sitebucket.parser.DefaultParser object at 0x1021baf90&gt;</em><big>)</big><a class="headerlink" href="#sitebucket.listener.SiteStream" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SiteStream object establishes an authenticated OAuth Connection
+to Twitter&#8217;s site stream endpoint and parses the returned data.</p>
+<p>Keyword arguments:</p>
+<ul class="simple">
+<li>follow &#8211; a list of users that have authenticated your app to follow</li>
+<li>stream_with &#8211; &#8216;user&#8217; or &#8216;followings&#8217;. A value of &#8216;user&#8217; will cause the stream to only return data about actions the users specified in follow take. A value of &#8216;followings&#8217; will cause the Stream object to return data about the user&#8217;s followings (basically their home timeline). This defaults to &#8216;user&#8217;.</li>
+<li>consumer &#8211; a python-oauth2 Consumer object for the app</li>
+<li>token &#8211; a python-oauth2 Token object for the app&#8217;s owner account.</li>
+<li>parser &#8211; an object that extends BaseParser that will handle data returned by the stream.</li>
+</ul>
+<p>To use, first import SiteStream and oauth2:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">sitebucket</span> <span class="kn">import</span> <span class="n">SiteStream</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">oauth2</span>
+</pre></div>
+</div>
+<p>Then generate your Consumer and Token objects:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">oauth2</span><span class="o">.</span><span class="n">Token</span><span class="p">(</span><span class="s">&#39;key&#39;</span><span class="p">,</span> <span class="s">&#39;secret&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">consumer</span> <span class="o">=</span> <span class="n">oauth2</span><span class="o">.</span><span class="n">Consumer</span><span class="p">(</span><span class="s">&#39;key&#39;</span><span class="p">,</span> <span class="s">&#39;secret&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>And then instantiate your SiteStream object:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span> <span class="o">=</span> <span class="n">SiteStream</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="n">consumer</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="sitebucket.listener.SiteStream.connect">
+<tt class="descname">connect</tt><big>(</big><big>)</big><a class="headerlink" href="#sitebucket.listener.SiteStream.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Repeatedly attempts to connect to the streaming server until
+either the failure conditions are met or a successful connection
+is made. Returns None (in the event of a disconnect request or error)
+or an httplib response object.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span> 
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sitebucket.listener.SiteStream.disconnect">
+<tt class="descname">disconnect</tt><big>(</big><big>)</big><a class="headerlink" href="#sitebucket.listener.SiteStream.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method sets flags that will cause the stream processing loops
+to terminate. However, since the listen method blocks, this method
+will need to be called from another thread to terminate the
+connection if listen is still running.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">disconnect_issued</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">running</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sitebucket.listener.SiteStream.listen">
+<tt class="descname">listen</tt><big>(</big><big>)</big><a class="headerlink" href="#sitebucket.listener.SiteStream.listen" title="Permalink to this definition">¶</a></dt>
+<dd><p>listen initiates a streaming connection via the connect method and
+processes data from Twitter as it is received.</p>
+<p>Important: This method blocks until the connection fails or another
+thread sets flags that causes the read loop to terminate.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">listen</span><span class="p">()</span> 
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sitebucket.listener.SiteStream.on_receive">
+<tt class="descname">on_receive</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#sitebucket.listener.SiteStream.on_receive" title="Permalink to this definition">¶</a></dt>
+<dd><p>When a complete message is received from the stream (json 
+terminated by \r\n), on_receive passes the data to the parser
+object&#8217;s parse method and clears the buffer.</p>
+<p>If we have a custom parser defined like so:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">myparser</span><span class="p">(</span><span class="n">BaseParser</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">print</span> <span class="n">data</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>and we tell our stream object to use this parser, it will simply print
+the data anytime it is received from the stream.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">myparser</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">on_receive</span><span class="p">(</span><span class="s">&quot;{&#39;some&#39;:&#39;json&#39;}</span><span class="se">\r\n</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="go">{&#39;some&#39;:&#39;json&#39;}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sitebucket.listener.SiteStream.request">
+<tt class="descname">request</tt><a class="headerlink" href="#sitebucket.listener.SiteStream.request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an oauth2 request object to be used for connecting to the
+streaming API endpoint. For debugging purposes, the returned request
+object is cached in __last_request.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">req</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">request</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">req</span><span class="o">.</span><span class="n">to_url</span><span class="p">()</span> 
+<span class="go">http://betastream.twitter.com/2b/site.json?...</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sitebucket.listener.SiteStream.reset_throttles">
+<tt class="descname">reset_throttles</tt><big>(</big><big>)</big><a class="headerlink" href="#sitebucket.listener.SiteStream.reset_throttles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets all stream throttles, flags, and buffers to their default
+value. This can be used to prepare a SiteStream object for a 
+reconnection attempt or to clear error states after a successful
+connection is made.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">error_count</span> <span class="o">=</span> <span class="n">RETRY_LIMIT</span> <span class="c"># Error count at limit</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">retry_time</span> <span class="o">=</span> <span class="mf">10000.0</span> <span class="c"># really high retry time</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="s">&#39;leftover input&#39;</span> <span class="c"># buffer with unfinished input</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">reset_throttles</span><span class="p">()</span> <span class="c"># reset!</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">retry_limit</span> <span class="o">==</span> <span class="n">RETRY_LIMIT</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">retry_time</span> <span class="o">==</span> <span class="n">RETRY_TIME</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">error_count</span> <span class="o">==</span> <span class="mi">0</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">timeout</span> <span class="o">==</span> <span class="n">TIMEOUT</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">buffer</span> <span class="o">==</span> <span class="s">&#39;&#39;</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sitebucket.listener.SiteStream.retry_ok">
+<tt class="descname">retry_ok</tt><a class="headerlink" href="#sitebucket.listener.SiteStream.retry_ok" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True or False based on whether or not this SiteStream 
+object has exceeded re-connection limits.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">retry_ok</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">error_count</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">retry_limit</span> <span class="c"># Raise error count to max</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">retry_ok</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sitebucket.listener.SiteStream.sleep">
+<tt class="descname">sleep</tt><big>(</big><em>stime=None</em>, <em>update_error_count=True</em>, <em>close_connection=True</em><big>)</big><a class="headerlink" href="#sitebucket.listener.SiteStream.sleep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Causes the the thread to sleep for the amount of time specified
+in the stream&#8217;s retry_time property. The retry_time is then squared.
+This method may optionally increment the error_count property and
+terminate the connection.</p>
+<ul class="simple">
+<li>stime &#8211; sleep time that overrides the object&#8217;s retry_time property. If this is set, retry_time is not squared.</li>
+<li>update_error_count &#8211; if this is true, the method increments the error_count property</li>
+<li>close_connection &#8211; if this is true, the method terminates the connection.</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">old_error_count</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">error_count</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">error_count</span> <span class="o">&gt;</span> <span class="n">old_error_count</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sitebucket.listener.SiteStream.url">
+<tt class="descname">url</tt><a class="headerlink" href="#sitebucket.listener.SiteStream.url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the URL based on PROTOCOL, SITE_STREAM_HOST, and URI.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span> <span class="o">=</span> <span class="n">SiteStream</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="n">consumer</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span><span class="o">.</span><span class="n">url</span>
+<span class="go">&#39;http://betastream.twitter.com/2b/site.json&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<div class="section" id="module-sitebucket.thread">
+<span id="spawning-streaming-connections-in-new-threads"></span><h2>Spawning Streaming Connections in new Threads<a class="headerlink" href="#module-sitebucket.thread" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="sitebucket.thread.ListenThread">
+<em class="property">class </em><tt class="descclassname">sitebucket.thread.</tt><tt class="descname">ListenThread</tt><big>(</big><em>stream</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#sitebucket.thread.ListenThread" title="Permalink to this definition">¶</a></dt>
+<dd><p>ListenThread is a thread object wrapper for listener.SiteStream
+objects. Instantiate a ListenThread instance with a required SiteStream
+object and then invoke the ListenThread&#8217;s start method to connect
+to the stream and parse the output in a separate thread.</p>
+<ul class="simple">
+<li>stream &#8211; an instance of listener.SiteStream</li>
+</ul>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">thread</span> <span class="o">=</span> <span class="n">ListenThread</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">stream</span> <span class="o">==</span> <span class="n">thread</span><span class="o">.</span><span class="n">stream</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="sitebucket.thread.ListenThread.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="headerlink" href="#sitebucket.thread.ListenThread.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets flags in the thread&#8217;s stream object that will cause its
+reading and connection loops to exit. This will eventually cause
+the thread to exit. It can be restarted via the object&#8217;s restart
+method.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">thread</span> <span class="o">=</span> <span class="n">ListenThread</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">thread</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="sitebucket.thread.ListenThread.connection_healthy">
+<tt class="descname">connection_healthy</tt><a class="headerlink" href="#sitebucket.thread.ListenThread.connection_healthy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if the thread&#8217;s stream object has not yet initialized
+its connection, its connection is healthy, or it is still attempting
+to establish a connection. False if connecting failed and all 
+allotted retry attempts have been exhausted.</p>
+<p>An uninitialized connection:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">thread</span> <span class="o">=</span> <span class="n">ListenThread</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">thread</span><span class="o">.</span><span class="n">connection_healthy</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>A stream that has failed:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">thread</span> <span class="o">=</span> <span class="n">ListenThread</span><span class="p">(</span><span class="n">failed_stream</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">thread</span><span class="o">.</span><span class="n">connection_healthy</span>
+<span class="go">False</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sitebucket.thread.ListenThread.restart">
+<tt class="descname">restart</tt><big>(</big><big>)</big><a class="headerlink" href="#sitebucket.thread.ListenThread.restart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Restart resets the stream object&#8217;s&#8216; failure flags and calls the
+thread&#8217;s start method. Use this method to retry a connection if the
+connection_healthy property starts to return False.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">thread</span> <span class="o">=</span> <span class="n">ListenThread</span><span class="p">(</span><span class="n">failed_stream</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">thread</span><span class="o">.</span><span class="n">restart</span><span class="p">()</span> 
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="sitebucket.thread.ListenThread.run">
+<tt class="descname">run</tt><big>(</big><big>)</big><a class="headerlink" href="#sitebucket.thread.ListenThread.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>This invokes the stream object&#8217;s listen method in the current
+thread. Use the object&#8217;s start method to start a new thread.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">thread</span> <span class="o">=</span> <span class="n">ListenThread</span><span class="p">(</span><span class="n">stream</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">thread</span><span class="o">.</span><span class="n">run</span><span class="p">()</span> 
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Streaming Connections</a><ul>
+<li><a class="reference internal" href="#module-sitebucket.thread">Spawning Streaming Connections in new Threads</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Sitebucket: Twitter Site Streams Consumer</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="monitor.html"
+                        title="next chapter">Monitoring Streams and Automatically Reconnecting</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/streams.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="monitor.html" title="Monitoring Streams and Automatically Reconnecting"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Sitebucket: Twitter Site Streams Consumer"
+             >previous</a> |</li>
+        <li><a href="index.html">Sitebucket v0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Thomas Welfley.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

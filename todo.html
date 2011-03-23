@@ -1,0 +1,136 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>To Do List &mdash; Sitebucket v0.0.1 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Sitebucket v0.0.1 documentation" href="index.html" />
+    <link rel="prev" title="Changelog" href="changelog.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Sitebucket v0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="to-do-list">
+<span id="todolist"></span><h1>To Do List<a class="headerlink" href="#to-do-list" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="duplicate-data-loss-of-data-when-consolidating-streaming-connections">
+<h2>Duplicate Data / Loss of Data when Consolidating Streaming Connections<a class="headerlink" href="#duplicate-data-loss-of-data-when-consolidating-streaming-connections" title="Permalink to this headline">¶</a></h2>
+<p>By default, the ListenerThreadMonitor will consolidate streaming connections
+whenever there are enough non-maxed out connections to do so. Ideally, this process would work as follows:</p>
+<ol class="arabic simple">
+<li>Figure out how to minimize connections</li>
+<li>Open up new, minimized connections but ignore their output.</li>
+<li>Once their output matches the old thread&#8217;s output, shut down the old threads and stop ignoring the new thread&#8217;s output.</li>
+</ol>
+<p>This is how it works right now:</p>
+<ol class="arabic simple">
+<li>Figure out how to minimize connections.</li>
+<li>Start running the new threads and wait 30 seconds for them to initialize.</li>
+<li>Shut down the old threads.</li>
+</ol>
+<p>30 seconds may be too short or too long.</p>
+</div>
+<div class="section" id="high-processor-usage-on-initialization-for-high-numbers-of-listener-threads">
+<h2>High Processor Usage on Initialization for high numbers of Listener Threads<a class="headerlink" href="#high-processor-usage-on-initialization-for-high-numbers-of-listener-threads" title="Permalink to this headline">¶</a></h2>
+<p>httplib&#8217;s response object doesn&#8217;t have a method for returning all data that&#8217;s been downloaded &#8216;so far&#8217;. You can either wait for the download to complete (which never happens because it&#8217;s a stream), or consume the data X characters at a time.</p>
+<p>The response object blocks if it hasn&#8217;t yet received X characters. Because of this, Sitebucket has to consume the data returned by the stream 1 character at a time.</p>
+<p>This causes really high CPU spikes when the stream is consuming large amounts of data. Unfortunately, this occurs regularly upon connection initialization because twitter sends a list of each user&#8217;s followings.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">To Do List</a><ul>
+<li><a class="reference internal" href="#duplicate-data-loss-of-data-when-consolidating-streaming-connections">Duplicate Data / Loss of Data when Consolidating Streaming Connections</a></li>
+<li><a class="reference internal" href="#high-processor-usage-on-initialization-for-high-numbers-of-listener-threads">High Processor Usage on Initialization for high numbers of Listener Threads</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="changelog.html"
+                        title="previous chapter">Changelog</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/todo.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="changelog.html" title="Changelog"
+             >previous</a> |</li>
+        <li><a href="index.html">Sitebucket v0.0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, Thomas Welfley.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
