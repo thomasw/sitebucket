@@ -192,7 +192,7 @@ class SiteStream(object):
                 resp = self.connection.getresponse()
                 ready = True
                 if resp.status != 200:
-                    logger.error("Connection attempted yield error response: %s" % resp.status)
+                    logger.error("Connection attempt yielded error response: %s" % resp.status)
                     resp = None
                     break
                 else:
