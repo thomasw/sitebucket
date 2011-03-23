@@ -54,9 +54,9 @@
 <span id="streaming-connections"></span><span id="streams"></span><h1>Streaming Connections<a class="headerlink" href="#module-sitebucket.listener" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="sitebucket.listener.SiteStream">
-<em class="property">class </em><tt class="descclassname">sitebucket.listener.</tt><tt class="descname">SiteStream</tt><big>(</big><em>follow</em>, <em>consumer</em>, <em>token</em>, <em>stream_with='user'</em>, <em>parser=&lt;sitebucket.parser.DefaultParser object at 0x1021baf90&gt;</em><big>)</big><a class="headerlink" href="#sitebucket.listener.SiteStream" title="Permalink to this definition">¶</a></dt>
-<dd><p>The SiteStream object establishes an authenticated OAuth Connection
-to Twitter&#8217;s site stream endpoint and parses the returned data.</p>
+<em class="property">class </em><tt class="descclassname">sitebucket.listener.</tt><tt class="descname">SiteStream</tt><big>(</big><em>follow</em>, <em>consumer</em>, <em>token</em>, <em>stream_with='user'</em>, <em>parser=&lt;sitebucket.parser.DefaultParser object at 0x102194ad0&gt;</em><big>)</big><a class="headerlink" href="#sitebucket.listener.SiteStream" title="Permalink to this definition">¶</a></dt>
+<dd><p>The SiteStream object establishes an authenticated connection via
+OAuth to Twitter&#8217;s site streams endpoint and parses the returned data.</p>
 <p>Keyword arguments:</p>
 <ul class="simple">
 <li>follow &#8211; a list of users that have authenticated your app to follow</li>
@@ -145,7 +145,7 @@ the data anytime it is received from the stream.</p>
 <tt class="descname">request</tt><a class="headerlink" href="#sitebucket.listener.SiteStream.request" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns an oauth2 request object to be used for connecting to the
 streaming API endpoint. For debugging purposes, the returned request
-object is cached in __last_request.</p>
+object is cached in self._last_request.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">req</span> <span class="o">=</span> <span class="n">stream</span><span class="o">.</span><span class="n">request</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">req</span><span class="o">.</span><span class="n">to_url</span><span class="p">()</span> 
 <span class="go">http://betastream.twitter.com/2b/site.json?...</span>
