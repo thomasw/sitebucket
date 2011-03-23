@@ -12,8 +12,8 @@ from error import SitebucketError
 
 logger = logging.getLogger("sitebucket")
 
-PROTOCOL = 'http://'
-SITE_STREAM_HOST = 'betastream.twitter.com'
+PROTOCOL = 'https://'
+SITE_STREAM_HOST = 'sitestream.twitter.com'
 URI = '/2b/site.json'
 TIMEOUT = 40.0
 RETRY_LIMIT = 10
@@ -81,7 +81,7 @@ class SiteStream(object):
         
         >>> stream = SiteStream([1,2], consumer, token)
         >>> stream.url
-        'http://betastream.twitter.com/2b/site.json'
+        'https://sitestream.twitter.com/2b/site.json'
         
         '''
         return "%s%s%s" % (PROTOCOL, SITE_STREAM_HOST, URI)
@@ -94,7 +94,7 @@ class SiteStream(object):
             
         >>> req = stream.request
         >>> print req.to_url() #doctest: +ELLIPSIS
-        http://betastream.twitter.com/2b/site.json?...
+        https://sitestream.twitter.com/2b/site.json?...
         
         '''
         parameters = {
