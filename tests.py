@@ -228,6 +228,7 @@ if __name__ == '__main__':
     doctest.testmod(monitor, extraglobs=extraglobs)
     doctest.testmod(error)
     doctest.testmod(util)
+    doctest.testfile('README.markdown')
     print "Done!"
     
     print "\nExecuting unit tests:"
