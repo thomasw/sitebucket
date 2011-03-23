@@ -209,6 +209,8 @@ if __name__ == '__main__':
     from sitebucket import listener, parser, thread, monitor, error, util
     from sitebucket.parser import BaseParser
     
+    monitor.CONSOLIDATE_SLEEP_INTERVAL = 0
+    
     doc_token = oauth.Token('key', 'secret')
     doc_consumer = oauth.Consumer('key', 'secret')
     stream = listener.SiteStream([1,2,3], consumer, token)

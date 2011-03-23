@@ -10,6 +10,7 @@ from parser import DefaultParser
 NONFULL_STREAM_LIMIT = 10
 RESTART_DEAD_STREAMS = True
 MONITOR_SLEEP_INTERVAL = 10
+CONSOLIDATE_SLEEP_INTERVAL = 30
 
 class ListenThreadMonitor(threading.Thread):
     '''The ListenThreadMonitor takes a follow list of any size, creates
@@ -74,6 +75,7 @@ class ListenThreadMonitor(threading.Thread):
         self.parser = parser
         self.threads = self.__create_thread_objects(follow, stream_with)
         self.disconnect_issued = False
+        self.running = False
         
         super(ListenThreadMonitor, self).__init__(*args, **kwargs)
     
@@ -112,6 +114,8 @@ class ListenThreadMonitor(threading.Thread):
             [thread.start() for thread in self.threads]
         
         while not self.disconnect_issued:
+            self.running = True
+            
             if RESTART_DEAD_STREAMS:
                 self.restart_unhealthy_streams()
             
@@ -126,6 +130,8 @@ class ListenThreadMonitor(threading.Thread):
                 print "Monitor terminated."
             
             time.sleep(MONITOR_SLEEP_INTERVAL)
+            
+        self.running = False
     
     def add_follows(self, follow, start=True):
         '''Creates and adds new ListenThreads based on a specified follow
@@ -153,9 +159,49 @@ class ListenThreadMonitor(threading.Thread):
         they are permitted to follow and consolidate them into the smallest
         number of streaming connections possible.
         
+        >>> monitor = ListenThreadMonitor([], consumer, token)
+        >>> monitor.add_follows([1,], start=False)
+        >>> monitor.add_follows([2,], start=False)
+        >>> monitor.add_follows([3,], start=False)
+        >>> len(monitor.threads)
+        3
+        >>> monitor.consolidate_streams()
+        >>> len(monitor.threads)
+        1
         '''
-        pass
-    
+        nonfull_streams = self.nonfull_streams
+        # Create a list of all the users in nonfull_streams
+        follow = []
+        [follow.extend(x.stream.follow) for x in nonfull_streams]
+        
+        consolidated_threads = \
+            self.__create_thread_objects(follow, self.stream_with)
+        
+        # We only need to do work if our set of consolidated threads is
+        # actually smaller than what we have currently
+        if len(consolidated_threads) >= len(nonfull_streams):
+            return
+        
+        if self.running:
+            [x.start() for x in consolidated_threads]
+        
+        # Sleep after starting up the new threads to give them time to
+        # catch up.
+        # TODO: What we really need to do here is start the new threads
+        # and wait for them to start receiving duplicate data
+        # (The best way to do this is to wrap the stream's parsers with
+        # some sort of object that keeps track of that. )
+        time.sleep(CONSOLIDATE_SLEEP_INTERVAL)
+        
+        # Remove the old threads from the thread list and disconnect them.
+        for x in nonfull_streams:
+            self.threads.remove(x)
+            x.close()
+            
+        # Add the new threads to the thread list
+        self.threads.extend(consolidated_threads)
+        
+        
     def restart_unhealthy_streams(self):
         '''Restart all unhealthy streaming ListenThreads.'''
         [thread.restart() for thread in self.unhealthy_streams]
