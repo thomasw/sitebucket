@@ -6,6 +6,8 @@ If you don't already have beta access for the Site Streams endpoint, you'll need
 
 ## Install
 
+Full [Sitebucket Documentation](http://thomasw.github.com/Sitebucket/)
+
 Sitebucket isn't in PyPI yet but, though can install it like so:
 
     > git clone git://github.com/thomasw/sitebucket.git
