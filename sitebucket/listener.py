@@ -13,7 +13,6 @@ from error import SitebucketError
 PROTOCOL = 'http://'
 SITE_STREAM_HOST = 'betastream.twitter.com'
 URI = '/2b/site.json'
-SITE_STREAM_ENDPOINT = "%s%s%s" % (PROTOCOL, SITE_STREAM_HOST, URI)
 TIMEOUT = 40.0
 RETRY_LIMIT = 10
 RETRY_TIME = 2.0
@@ -78,6 +77,17 @@ class SiteStream(object):
         self.__check_params()
     
     @property
+    def url(self):
+        ''' Returns the URL based on PROTOCOL, SITE_STREAM_HOST, and URI.
+        
+        >>> stream = SiteStream([1,2], consumer, token)
+        >>> stream.url
+        'http://betastream.twitter.com/2b/site.json'
+        
+        '''
+        return "%s%s%s" % (PROTOCOL, SITE_STREAM_HOST, URI)
+    
+    @property
     def request(self):
         ''' Returns an oauth2 request object to be used for connecting to the
         streaming API endpoint. For debugging purposes, the returned request
@@ -97,7 +107,7 @@ class SiteStream(object):
             'oauth_token': self.token.key,
             'oauth_consumer_key': self.consumer.key
         }
-        request = oauth.Request(METHOD, SITE_STREAM_ENDPOINT, parameters=parameters)
+        request = oauth.Request(METHOD, self.url, parameters=parameters)
         request.sign_request(
             oauth.SignatureMethod_HMAC_SHA1(), self.consumer, self.token)
         
