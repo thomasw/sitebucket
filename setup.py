@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(name="sitebucket",
-      version="0.0.1",
+      version="0.0.2",
       description="A threaded Twitter Site Stream consumer.",
       license="MIT",
       author="Thomas Welfley",
