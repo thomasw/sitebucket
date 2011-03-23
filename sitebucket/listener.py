@@ -97,11 +97,7 @@ class SiteStream(object):
             'oauth_token': self.token.key,
             'oauth_consumer_key': self.consumer.key
         }
-        url = "%s?%s" % (
-            SITE_STREAM_ENDPOINT,
-            urllib.urlencode({'follow':','.join(map(str, self.follow))}),
-            )
-        request = oauth.Request(METHOD, url, parameters=parameters)
+        request = oauth.Request(METHOD, SITE_STREAM_ENDPOINT, parameters=parameters)
         request.sign_request(
             oauth.SignatureMethod_HMAC_SHA1(), self.consumer, self.token)
         
