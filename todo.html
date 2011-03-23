@@ -71,8 +71,8 @@ whenever there are enough non-maxed out connections to do so. Ideally, this proc
 <p>The response object blocks if it hasn&#8217;t yet received X characters. Because of this, Sitebucket has to consume the data returned by the stream 1 character at a time.</p>
 <p>This causes really high CPU spikes when the stream is consuming large amounts of data. Unfortunately, this occurs regularly upon connection initialization because twitter sends a list of each user&#8217;s followings.</p>
 </div>
-<div class="section" id="the-default-parses-only-recognizes-tweets">
-<h2>The Default Parses only Recognizes Tweets<a class="headerlink" href="#the-default-parses-only-recognizes-tweets" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="the-default-parser-only-recognizes-tweets">
+<h2>The Default Parser only Recognizes Tweets<a class="headerlink" href="#the-default-parser-only-recognizes-tweets" title="Permalink to this headline">¶</a></h2>
 <p>The Default parser should recognize and call functions for all types of messages returned by the streaming API.</p>
 </div>
 </div>
@@ -88,7 +88,7 @@ whenever there are enough non-maxed out connections to do so. Ideally, this proc
 <li><a class="reference internal" href="#">To Do List</a><ul>
 <li><a class="reference internal" href="#duplicate-data-loss-of-data-when-consolidating-streaming-connections">Duplicate Data / Loss of Data when Consolidating Streaming Connections</a></li>
 <li><a class="reference internal" href="#high-processor-usage-on-initialization-for-high-numbers-of-listener-threads">High Processor Usage on Initialization for high numbers of Listener Threads</a></li>
-<li><a class="reference internal" href="#the-default-parses-only-recognizes-tweets">The Default Parses only Recognizes Tweets</a></li>
+<li><a class="reference internal" href="#the-default-parser-only-recognizes-tweets">The Default Parser only Recognizes Tweets</a></li>
 </ul>
 </li>
 </ul>
