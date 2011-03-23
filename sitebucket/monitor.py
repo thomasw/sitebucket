@@ -1,11 +1,14 @@
 import threading
 import collections
 import time
+import logging
 
 from listener import SiteStream, FOLLOW_LIMIT
 from thread import ListenThread
 from util import grouper
 from parser import DefaultParser
+
+logger = logging.getLogger("sitebucket")
 
 NONFULL_STREAM_LIMIT = 10
 RESTART_DEAD_STREAMS = True
@@ -98,7 +101,8 @@ class ListenThreadMonitor(threading.Thread):
             thread = ListenThread(stream)
             thread.daemon = True
             threads.append(thread)
-            
+        
+        logger.debug("Created %s new thread objects." % len(threads))
         return threads
     
     def run(self):
@@ -110,7 +114,7 @@ class ListenThreadMonitor(threading.Thread):
         
         '''
         if not self.disconnect_issued:
-            print "Starting threads..."
+            logger.info("Starting threads...")
             [thread.start() for thread in self.threads]
         
         while not self.disconnect_issued:
@@ -120,16 +124,16 @@ class ListenThreadMonitor(threading.Thread):
                 self.restart_unhealthy_streams()
             
             if len(self.nonfull_streams) > NONFULL_STREAM_LIMIT:
-                self.consolidate_streams
+                self.consolidate_streams()
             
             if self.disconnect_issued:
-                print "Issuing shutdown requests to streams..."
+                logger.info("Disconnect issued. Issuing shutdown requests to streams...")
                 while self.threads:
                     thread = self.threads.pop()
                     thread.close()
-                print "Monitor terminated."
-            
-            time.sleep(MONITOR_SLEEP_INTERVAL)
+                logger.info("Monitor terminating...")
+            else:
+                time.sleep(MONITOR_SLEEP_INTERVAL)
             
         self.running = False
     
@@ -169,6 +173,7 @@ class ListenThreadMonitor(threading.Thread):
         >>> len(monitor.threads)
         1
         '''
+        logger.info("Attempting to minimize active stream connections.")
         nonfull_streams = self.nonfull_streams
         # Create a list of all the users in nonfull_streams
         follow = []
@@ -199,11 +204,15 @@ class ListenThreadMonitor(threading.Thread):
             x.close()
             
         # Add the new threads to the thread list
+        logger.info("Reduced stream connections by %s" \
+            % (len(nonfull_streams) - len(consolidated_threads)))
         self.threads.extend(consolidated_threads)
         
         
     def restart_unhealthy_streams(self):
         '''Restart all unhealthy streaming ListenThreads.'''
+        logger.info('%s unhealthy streams detected.' \
+            % len(self.unhealthy_streams))
         [thread.restart() for thread in self.unhealthy_streams]
     
     def disconnect(self):
@@ -215,6 +224,7 @@ class ListenThreadMonitor(threading.Thread):
         >>> monitor.run()
         
         '''
+        logger.debug("Disconnect received.")
         self.disconnect_issued = True
     
     @property

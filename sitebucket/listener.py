@@ -3,12 +3,14 @@ from socket import timeout
 import urllib
 import time
 import collections
+import logging
 import oauth2 as oauth
 import simplejson as json
 
 from parser import DefaultParser, BaseParser
 from error import SitebucketError
 
+logger = logging.getLogger("sitebucket")
 
 PROTOCOL = 'http://'
 SITE_STREAM_HOST = 'betastream.twitter.com'
@@ -112,6 +114,7 @@ class SiteStream(object):
             oauth.SignatureMethod_HMAC_SHA1(), self.consumer, self.token)
         
         self._last_request = request
+        logger.debug("OAuth Request Object Generated. %s" % request)
         return request
     
     @property
@@ -189,14 +192,15 @@ class SiteStream(object):
                 resp = self.connection.getresponse()
                 ready = True
                 if resp.status != 200:
-                    print "Error: %s" % resp.status
+                    logger.error("Connection attempted yield error response: %s" % resp.status)
                     resp = None
                     break
                 else:
-                    print "Connection established."
+                    logger.info("Stream connection established. Response object ready.")
                     self.running = True
                     self.reset_throttles()
             except httplib.ResponseNotReady:
+                logger.error("Response object not yet ready.")
                 ready = False
                 self.sleep(
                     stime=.1,
@@ -230,7 +234,7 @@ class SiteStream(object):
                         self.on_receive(data)
                         data = ''
             except timeout:
-                print "Timeout!"
+                logger.error("Connection timed out during read loop.")
                 self.sleep()
                 break
             except AttributeError:
@@ -242,7 +246,7 @@ class SiteStream(object):
                 raise
         
         if self.disconnect_issued:
-            print "Exiting read loop."
+            logger.info("Disconnect issued. Exiting read loop.")
             return None
         
         return self.listen()
@@ -270,7 +274,7 @@ class SiteStream(object):
                 if resp:
                     break
             except timeout:
-                print "Timeout!"
+                logger.error("Connection attempt timed out.")
             except Exception, exception:
                 self.sleep(stime=0)
                 raise exception 
@@ -279,11 +283,11 @@ class SiteStream(object):
                 self.sleep()
         
         if not self.retry_ok:
-            print "Failed to connect."
+            logger.error("Connection attempt failed. Stream object giving up.")
             resp = None
         
         if self.disconnect_issued:
-            print "Aborting connection attempt."
+            logger.info("Disconnect issued. Aborting connection attempt.")
             resp = None
         
         return resp
@@ -340,7 +344,7 @@ class SiteStream(object):
             self.connection.close()
         
         if stime is None:
-            print "Sleeping for %s" % self.retry_time
+            logger.info("Stream sleeping for %s" % self.retry_time)
             time.sleep(self.retry_time)
             self.retry_time *= self.retry_time
         else:
@@ -359,6 +363,7 @@ class SiteStream(object):
         False
         
         '''
+        logger.debug('Disconnect request received.')
         self.disconnect_issued = True
         self.sleep(stime=0, update_error_count=False, close_connection=True)
     
