@@ -211,8 +211,9 @@ class ListenThreadMonitor(threading.Thread):
         
     def restart_unhealthy_streams(self):
         '''Restart all unhealthy streaming ListenThreads.'''
-        logger.info('%s unhealthy streams detected.' \
-            % len(self.unhealthy_streams))
+        if len(self.unhealthy_streams) > 0:
+            logger.info('%s unhealthy streams detected.' \
+                % len(self.unhealthy_streams))
         [thread.restart() for thread in self.unhealthy_streams]
     
     def disconnect(self):
