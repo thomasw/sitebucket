@@ -109,6 +109,17 @@ class SiteStreamConnectTests(unittest.TestCase):
         self.assertEqual(resp, None)
         self.assertEqual(self.stream.error_count, 2)
     
+    def test_ssl_error(self):
+        '''If httplib raises an SSL exception, it should retry retry_limit
+        times and then fail and return none.'''
+        from ssl import SSLError
+        httplib.HTTPSConnection = Mock_HTTPConnection(conn_exception=SSLError)
+        httplib.HTTPConnection = Mock_HTTPConnection(conn_exception=SSLError)
+        self.stream.retry_limit = 2
+        resp = self.stream.connect()
+        self.assertEqual(resp, None)
+        self.assertEqual(self.stream.error_count, 2)
+    
     def test_non_200_resp(self):
         '''If there is a non-200 response status, it should retry retry_limit
         times and then fail and return None.'''
@@ -145,7 +156,8 @@ class SiteStreamConnectTests(unittest.TestCase):
             Mock_HTTPConnection(conn_exception=AttributeError)
         httplib.HTTPConnection = httplib.HTTPSConnection
         
-        self.assertRaises(AttributeError, self.stream.connect)
+        resp = self.stream.connect()
+        self.assertEqual(resp, None)
 
 def Mock_HTTPConnection(conn_exception=None, status=200, *args, **kwargs):
     

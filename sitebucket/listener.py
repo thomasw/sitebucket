@@ -1,5 +1,6 @@
 import httplib
 from socket import timeout
+from ssl import SSLError
 import urllib
 import time
 import collections
@@ -230,17 +231,14 @@ class SiteStream(object):
                     if data.endswith('\r\n'):
                         self.on_receive(data)
                         data = ''
-            except timeout:
+            except (timeout, SSLError):
                 logger.error("Connection timed out during read loop.")
                 self.sleep()
                 break
-            except AttributeError:
+            except:
                 if not self.disconnect_issued:
                     self.sleep(stime=0)
-                    raise
-            except:
-                self.sleep(stime=0)
-                raise
+                    logger.error("Unhandled exception encountered during read loop.", exc_inf=True)
         
         if self.disconnect_issued:
             logger.info("Disconnect issued. Exiting read loop.")
@@ -270,11 +268,11 @@ class SiteStream(object):
                 
                 if resp:
                     break
-            except timeout:
+            except (timeout, SSLError):
                 logger.error("Connection attempt timed out.")
             except Exception, exception:
                 self.sleep(stime=0)
-                raise exception 
+                logger.error("Unhandled exception encountered during connect loop.", exc_info=True)
             
             if not self.disconnect_issued:
                 self.sleep()
