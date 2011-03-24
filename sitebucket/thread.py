@@ -45,17 +45,21 @@ class ListenThread(threading.Thread):
         return self.stream.running and self.stream.retry_ok
     
     def restart(self):
-        '''Restart resets the stream object's' failure flags and calls the
-        thread's start method. Use this method to retry a connection if the
-        connection_healthy property starts to return False.
+        '''Restart resets the stream object's' failure flags and creates a new
+        ListenThread object with the dead thread's stream object. Use this
+        method to retry a connection if the connection_healthy property starts
+        to return False.
         
         >>> thread = ListenThread(failed_stream)
         >>> thread.restart() #doctest: +SKIP
+        <ListenThread(..., ...)>
         
         '''
         self.stream.disconnect_issued = False
         self.stream.reset_throttles()
-        self.start()
+        new_thread = ListenThread(self.stream)
+        new_thread.start()
+        return new_thread
     
     def run(self):
         '''This invokes the stream object's listen method in the current

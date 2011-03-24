@@ -209,10 +209,11 @@ class ListenThreadMonitor(threading.Thread):
         
     def restart_unhealthy_streams(self):
         '''Restart all unhealthy streaming ListenThreads.'''
-        if len(self.unhealthy_streams) > 0:
-            logger.info('%s unhealthy streams detected.' \
-                % len(self.unhealthy_streams))
-        [thread.restart() for thread in self.unhealthy_streams]
+        unhealthy = self.unheahtly_streams
+        if len(unhealthy) > 0:
+            logger.info('%s unhealthy streams detected.' % len(unhealthy))
+        [self.threads.remove(x) for x in unhealthy]
+        [self.threads.append(x.restart()) for x in unhealthy]
     
     def disconnect(self):
         '''Sets the disconnect flag to True, which will cause the monitor's
