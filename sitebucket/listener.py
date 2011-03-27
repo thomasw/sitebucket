@@ -238,7 +238,7 @@ class SiteStream(object):
             except:
                 if not self.disconnect_issued:
                     self.sleep(stime=0)
-                    logger.error("Unhandled exception encountered during read loop.", exc_inf=True)
+                    logger.error("Unhandled exception encountered during read loop.", exc_info=True)
         
         if self.disconnect_issued:
             logger.info("Disconnect issued. Exiting read loop.")
