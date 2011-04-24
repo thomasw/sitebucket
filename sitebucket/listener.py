@@ -237,7 +237,7 @@ class SiteStream(object):
                 break
             except:
                 if not self.disconnect_issued:
-                    self.sleep(stime=0)
+                    self.sleep()
                     logger.error("Unhandled exception encountered during read loop.", exc_info=True)
         
         if self.disconnect_issued:
@@ -271,7 +271,6 @@ class SiteStream(object):
             except (timeout, SSLError):
                 logger.error("Connection attempt timed out.")
             except Exception, exception:
-                self.sleep(stime=0)
                 logger.error("Unhandled exception encountered during connect loop.", exc_info=True)
             
             if not self.disconnect_issued:
