@@ -6,7 +6,7 @@ If you don't already have beta access for the Site Streams endpoint, you'll need
 
 ## Install
 
-Full [Sitebucket Documentation](http://thomasw.github.com/Sitebucket/)
+Full [Sitebucket Documentation](http://thomasw.github.com/sitebucket/)
 
 Sitebucket isn't in PyPI yet but, though can install it like so:
 
@@ -16,7 +16,7 @@ Sitebucket isn't in PyPI yet but, though can install it like so:
 
 or if you prefer pip (<3 pip):
 
-    > pip install -e git://github.com/thomasw/Sitebucket.git#egg=sitebucket
+    > pip install -e git://github.com/thomasw/sitebucket.git#egg=sitebucket
 
 ## Usage
 
