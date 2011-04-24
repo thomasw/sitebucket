@@ -23,11 +23,10 @@ Finally, be sure to read through Twitter's Site Streams documentation. That's it
 * `Site Streams Beta Signup Form <https://spreadsheets.google.com/viewform?hl=en&formkey=dFBTbHZIMVhseUtqS2NkT283RTluX3c6MQ&ndplr=1#gid=0>`_
 * `Site Streams Documetnation <http://dev.twitter.com/pages/site_streams>`_
 
-Contents:
----------
+Contents
+--------
 
 .. toctree::
-   :maxdepth: 2
    
    streams.rst
    monitor.rst
