@@ -54,7 +54,7 @@
 <span id="streaming-connections"></span><span id="streams"></span><h1>Streaming Connections<a class="headerlink" href="#module-sitebucket.listener" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="sitebucket.listener.SiteStream">
-<em class="property">class </em><tt class="descclassname">sitebucket.listener.</tt><tt class="descname">SiteStream</tt><big>(</big><em>follow</em>, <em>consumer</em>, <em>token</em>, <em>stream_with='user'</em>, <em>parser=&lt;sitebucket.parser.DefaultParser object at 0x1021bfc50&gt;</em><big>)</big><a class="headerlink" href="#sitebucket.listener.SiteStream" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">sitebucket.listener.</tt><tt class="descname">SiteStream</tt><big>(</big><em>follow</em>, <em>consumer</em>, <em>token</em>, <em>stream_with='user'</em>, <em>parser=&lt;sitebucket.parser.DefaultParser object at 0x1021b6e90&gt;</em><big>)</big><a class="headerlink" href="#sitebucket.listener.SiteStream" title="Permalink to this definition">¶</a></dt>
 <dd><p>The SiteStream object establishes an authenticated connection via
 OAuth to Twitter&#8217;s site streams endpoint and parses the returned data.</p>
 <p>Keyword arguments:</p>
@@ -279,11 +279,13 @@ allotted retry attempts have been exhausted.</p>
 <dl class="method">
 <dt id="sitebucket.thread.ListenThread.restart">
 <tt class="descname">restart</tt><big>(</big><big>)</big><a class="headerlink" href="#sitebucket.thread.ListenThread.restart" title="Permalink to this definition">¶</a></dt>
-<dd><p>Restart resets the stream object&#8217;s&#8216; failure flags and calls the
-thread&#8217;s start method. Use this method to retry a connection if the
-connection_healthy property starts to return False.</p>
+<dd><p>Restart resets the stream object&#8217;s&#8216; failure flags and creates a new
+ListenThread object with the dead thread&#8217;s stream object. Use this
+method to retry a connection if the connection_healthy property starts
+to return False.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">thread</span> <span class="o">=</span> <span class="n">ListenThread</span><span class="p">(</span><span class="n">failed_stream</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">thread</span><span class="o">.</span><span class="n">restart</span><span class="p">()</span> 
+<span class="go">&lt;ListenThread(..., ...)&gt;</span>
 </pre></div>
 </div>
 </dd></dl>

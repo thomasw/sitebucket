@@ -14,7 +14,7 @@ setuptools::
 
 pip::
 
-    > pip install -e git://github.com/thomasw/Sitebucket.git#egg=sitebucket
+    > pip install -e git://github.com/thomasw/sitebucket.git#egg=sitebucket
 
 You'll also want to make sure that you have requested that Twitter white list your app for Site Streams access and that they have granted that request. The Site Streams API is currently in beta and you will not be able to use this library until they have granted your app access to the Site Streams endpoint.
 
